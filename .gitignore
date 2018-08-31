@@ -1,0 +1,9 @@
+node_modules
+build/**/*
+!build/.keep
+config/keys/private-key.pem
+config/keys/public-key.pem
+config/env/*.env
+.sass_cache
+.DS_Store
+*.log
