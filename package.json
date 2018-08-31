@@ -1,0 +1,19 @@
+{
+  "name": "cred-server",
+  "version": "0.0.1",
+  "description": "An authZ + authN system for managing users and resources across disparate APIs via permissions embeded in JSON web tokens.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "express",
+    "auth",
+    "cred",
+    "authorization",
+    "authentication",
+    "jwt"
+  ],
+  "author": "Rob McLarty <r@robmclarty.com> (http://robmclarty.com)",
+  "license": "MIT"
+}
