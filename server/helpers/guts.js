@@ -4,23 +4,23 @@ module.exports = ({
   knex = {},
   name = 'name',
   tableName = 'table-name',
-  selectableProps = [],
+  fields = [],
   timeout = 1000
 }) => {
   const create = props => {
     delete props.id // not allowed to set `id`
 
     return knex.insert(props)
-      .returning(selectableProps)
+      .returning(fields)
       .into(tableName)
       .timeout(timeout)
   }
 
-  const findAll = () => knex.select(selectableProps)
+  const findAll = () => knex.select(fields)
     .from(tableName)
     .timeout(timeout)
 
-  const find = filters => knex.select(selectableProps)
+  const find = filters => knex.select(fields)
     .from(tableName)
     .where(filters)
     .timeout(timeout)
@@ -33,7 +33,7 @@ module.exports = ({
       return results[0]
     })
 
-  const findById = id => knex.select(selectableProps)
+  const findById = id => knex.select(fields)
     .from(tableName)
     .where({ id })
     .timeout(timeout)
@@ -44,7 +44,7 @@ module.exports = ({
     return knex.update(props)
       .from(tableName)
       .where({ id })
-      .returning(selectableProps)
+      .returning(fields)
       .timeout(timeout)
   }
 
@@ -56,7 +56,7 @@ module.exports = ({
   return {
     name,
     tableName,
-    selectableProps,
+    fields,
     timeout,
     create,
     findAll,
