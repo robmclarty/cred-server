@@ -24,14 +24,6 @@ const MUTABLE_FIELDS = [
   'password'
 ]
 
-const tokenPayload = (user, permissions) => ({
-  userId: user.id,
-  username: user.username,
-  isActive: user.is_active,
-  isAdmin: user.is_admin,
-  permissions: tokenPermissions(permissions)
-})
-
 // Bcrypt functions used for hashing password and later verifying it.
 const SALT_ROUNDS = 10
 const hashPassword = password => bcrypt.hash(password, SALT_ROUNDS)
@@ -59,22 +51,13 @@ const sanitize = async props => {
 
 const validate = async props => {
   // username
+  if (validator.isEmpty(props.username)) throw '`username` is required'
   if (!validator.matches(props.username, /a-z0-9/i)) throw '`username` must be format a-z and 0-9'
 
   // email
+  if (validator.isEmpty(props.email)) throw '`email` is required'
   if (!validator.isEmail(props.email)) throw '`email` must be a valid email address'
 }
-
-// TODO: not implemented....
-// const beforeUpdate = props => {
-//   // TODO: get user data (or at least password) here somehow
-//   const hasChangedPassword = props.password && verifyPassword(props.password, user.password)
-//   const hashedProps = hasChangedPassword ? beforeSave(props) : props
-//
-//   return hashedProps
-// }
-
-// ---
 
 const create = async props => {
   try {
@@ -136,17 +119,13 @@ const loginUpdate = async id => {
     .returning(SELECTABLE_FIELDS)
 }
 
-const updatePermission = (id, resource, actions) => {
-}
-
-const updatePermissions = (id, permissions) => {
-}
-
-const deletePermission = (id, resourceName) => {
-}
-
-const tokenPayload = id => {
-}
+const tokenPayload = (user, permissions) => ({
+  userId: user.id,
+  username: user.username,
+  isActive: user.is_active,
+  isAdmin: user.is_admin,
+  permissions: tokenPermissions(permissions)
+})
 
 module.exports = {
   tableName: TABLE_NAME,
@@ -154,5 +133,6 @@ module.exports = {
   create,
   update,
   verify,
+  loginUpdate,
   tokenPayload
 }
