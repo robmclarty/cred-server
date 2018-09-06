@@ -1,11 +1,7 @@
 'use strict'
 
-const knex = require('../knex')
-const bcrypt = require('bcrypt')
-const validator = require('validator')
-const { isArray } = require('./validation_helper')
-
 const TABLE_NAME = 'users'
+const SALT_ROUNDS = 10 // how many rounds used for password hash salt
 
 // Properties that are allowed to be selected from the database for reading.
 // (e.g., `password` is not included and thus cannot be selected)
@@ -20,6 +16,8 @@ const SELECTABLE_FIELDS = [
   'updated_at',
   'created_at'
 ]
+
+// Properties that are allowed to be modified.
 const MUTABLE_FIELDS = [
   'username',
   'email',
@@ -27,8 +25,13 @@ const MUTABLE_FIELDS = [
   'is_active'
 ]
 
+const knex = require('../knex')
+const bcrypt = require('bcrypt')
+const validator = require('validator')
+const { isArray } = require('./validation_helper')
+const queries = require('../helpers/query_helper')(TABLE_NAME, SELECTABLE_FIELDS)
+
 // Bcrypt functions used for hashing password and later verifying it.
-const SALT_ROUNDS = 10
 const hashPassword = password => bcrypt.hash(password, SALT_ROUNDS)
 const verifyPassword = (password, hash) => bcrypt.compare(password, hash)
 
@@ -55,69 +58,30 @@ const validate = props => {
   if (!validator.isEmail(props.email)) throw '`email` must be a valid email address'
 }
 
-const findAll = async () => knex.select(SELECTABLE_FIELDS)
-  .from(TABLE_NAME)
-
-const findById = async id => knex.select(SELECTABLE_FIELDS)
-  .from(TABLE_NAME)
-  .where({ id })
-
-const find = async filters => knex.select(SELECTABLE_FIELDS)
-  .from(TABLE_NAME)
-  .where(filters)
-
-// Same as `find` by only returns the first match if length > 1.
-const findOne = async filters => {
-  const users = await find(filters)
-
-  if (!isArray(users)) return users
-
-  return users[0]
-}
-
 const create = async props => {
-  try {
-    const filteredProps = filter(props, MUTABLE_FIELDS)
-    const saneProps = await sanitize(filteredProps)
-    const validProps = validate(saneProps)
-    const user = await knex.insert(validProps)
-      .into(TABLE_NAME)
-      .returning(SELECTABLE_FIELDS)
+  const filteredProps = filter(props, MUTABLE_FIELDS)
+  const saneProps = await sanitize(filteredProps)
+  const validProps = validate(saneProps)
+  const user = await queries.create(validProps)
 
-    return user
-  } catch (err) {
-    throw `Problem creating user: ${ err }`
-  }
+  return user
 }
 
 // Do not allow changing `password` through regular update function.
 // Do not allow changing of `id`.
 const update = async (id, props) => {
-  try {
-    const filteredProps = filter(props, MUTABLE_FIELDS)
-    const saneProps = await sanitize(filteredProps)
-    const validProps = await validate(saneProps)
-    const user = await knex.update(validProps)
-      .from(TABLE_NAME)
-      .where({ id })
-      .returning(SELECTABLE_FIELDS)
+  const filteredProps = filter(props, MUTABLE_FIELDS)
+  const saneProps = await sanitize(filteredProps)
+  const validProps = await validate(saneProps)
+  const user = await queries.udpate(id, validProps)
 
-    return user
-  } catch (err) {
-    throw `Problem updating user: ${ err }`
-  }
+  return user
 }
-
-const destroy = async id => knex.del()
-  .from(TABLE_NAME)
-  .where({ id })
 
 const verify = async (username, password) => {
   const verifyErrorMsg = 'Username or password do not match'
 
-  const user = knex.first()
-    .from(TABLE_NAME)
-    .where({ username })
+  const user = await queries.findOne({ username })
 
   if (!user) throw verifyErrorMsg
 
@@ -125,19 +89,12 @@ const verify = async (username, password) => {
 
   if (!isMatch) throw verifyErrorMsg
 
-  return filter(user, SELECTABLE_FIELDS)
+  return user
 }
 
-const loginUpdate = async id => {
-  const user = await knex.first('id')
-    .from(tableName)
-    .where({ id })
-
-  return knex.update({ login_at: knex.fn.now() })
-    .from(TABLE_NAME)
-    .where({ id: user.id })
-    .returning(SELECTABLE_FIELDS)
-}
+const loginUpdate = async id => queries.update(id, {
+  login_at: knex.fn.now()
+})
 
 const tokenPayload = (user, permissions) => ({
   user_id: user.id,
@@ -150,13 +107,9 @@ const tokenPayload = (user, permissions) => ({
 module.exports = {
   tableName: TABLE_NAME,
   fields: SELECTABLE_FIELDS,
-  findAll,
-  find,
-  findOne,
-  findById,
-  create,
-  update,
-  destroy,
+  ...queries,
+  create, // override default
+  update, // override default
   verify,
   loginUpdate,
   tokenPayload
