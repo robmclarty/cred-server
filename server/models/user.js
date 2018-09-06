@@ -96,6 +96,7 @@ const loginUpdate = async id => queries.update(id, {
   login_at: knex.fn.now()
 })
 
+// TODO: not sure how this hooks up to permissions yet
 const tokenPayload = (user, permissions) => ({
   user_id: user.id,
   username: user.username,
