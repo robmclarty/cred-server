@@ -1,16 +1,5 @@
 'use strict'
 
-const validator = require('validator')
-const {
-  notEmptyOrInList,
-  isArray,
-  isArrayOfStrings
-} = require('../helpers/validation_helper')
-const {
-  jsonToArrays,
-  arraysToJson,
-} = require('../helpers/actions_helper')
-
 const TABLE_NAME = 'permissions'
 
 const SELECTABLE_FIELDS = [
@@ -21,14 +10,27 @@ const SELECTABLE_FIELDS = [
   'updated_at',
   'created_at'
 ]
+
 const CREATABLE_FIELDS = [
   'user_id',
   'resource_id',
   'actions'
 ]
+
 const MUTABLE_FIELDS = [
   'actions'
 ]
+
+const validator = require('validator')
+const {
+  notEmptyOrInList,
+  isArray,
+  isArrayOfStrings
+} = require('../helpers/validation_helper')
+const {
+  jsonToArrays,
+  arraysToJson,
+} = require('../helpers/actions_helper')
 
 // Remove all immutable fields
 const filter = (props, keys) => Object.keys(props).reduce((filteredProps, key) => {
@@ -53,13 +55,28 @@ const validate = props => {
   if (!isArrayOfStrings(props.actions)) throw '`actions` must be an array of srtings'
 }
 
-const find = async filters => knex.select(SELECTABLE_FIELDS)
-  .from(TABLE_NAME)
-  .where(filters)
-  .then(permissions => permissions.map(p => jsonToArrays(p)))
+const create = async props => {
+  const filteredProps = filter(props, CREATABLE_FIELDS)
+  const saneProps = sanitize(filteredProps)
+  const validProps = validate(saneProps)
+  const permission = await queries.create(validProps)
 
-const findAll = async () => find({})
+  return permission
+}
 
-const findOne = async filters => find(filters)[0]
+const update = async (id, props) => {
+  const filteredProps = filter(props, MUTABLE_FIELDS)
+  const saneProps = sanitize(filteredProps)
+  const validProps = validate(saneProps)
+  const permission = await queries.update(validProps)
 
-const findById = async id => find({ id })[0]
+  return permission
+}
+
+module.exports = {
+  tableName: TABLE_NAME,
+  fields: SELECTABLE_FIELDS,
+  ...queries,
+  create, // overrid default
+  update // override default
+}
