@@ -28,7 +28,7 @@ const MUTABLE_FIELDS = [
 const knex = require('../knex')
 const bcrypt = require('bcrypt')
 const validator = require('validator')
-const { isArray } = require('./validation_helper')
+const { isArray } = require('../helpers/validation_helper')
 const queries = require('../helpers/query_helper')(TABLE_NAME, SELECTABLE_FIELDS)
 
 // Bcrypt functions used for hashing password and later verifying it.
@@ -109,8 +109,8 @@ module.exports = {
   tableName: TABLE_NAME,
   fields: SELECTABLE_FIELDS,
   ...queries,
-  create, // override default
-  update, // override default
+  create, // override queries.create
+  update, // override queries.update
   verify,
   loginUpdate,
   tokenPayload

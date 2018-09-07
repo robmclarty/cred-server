@@ -73,7 +73,6 @@ const notFound = (err, req, res, next) => {
 
 // If there's still an error at this point, return a generic 500 error.
 const genericError = (err, req, res, next) => {
-  console.log('err: ', err)
   res.status(GENERIC_ERROR).send({
     ok: false,
     message: err.message || 'Internal server error',
@@ -90,7 +89,7 @@ const catchall = (req, res, next) => {
   })
 }
 
-module.exports = {
+const errorMiddlewares = {
   unauthorized,
   forbidden,
   conflict,
@@ -99,4 +98,11 @@ module.exports = {
   genericError,
   notFound,
   catchall
+}
+
+// Creating an array of all middleware functions called `all` for use by
+// Express's `app.use()` function to include all middlewares at once.
+module.exports = {
+  ...errorMiddlewares,
+  all: Object.keys(errorMiddlewares).map(key => errorMiddlewares[key])
 }

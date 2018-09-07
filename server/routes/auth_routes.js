@@ -10,10 +10,10 @@ const {
 } = require('../controllers/auth_controller')
 
 router.route('/auth')
-  .post(postTokens)
-  .delete(deleteTokens)
+  .post(postAuth)
+  .delete(deleteAuth)
 
 router.route('/auth/refresh')
-  .post(refreshTokens)
+  .post(refreshAuth)
 
 module.exports = router

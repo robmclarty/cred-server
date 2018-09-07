@@ -1,8 +1,8 @@
 'use strict'
 
 module.exports = {
-  port: process.env.PORT,
   env: process.env.NODE_ENV,
+  port: process.env.PORT,
   name: process.env.APP_NAME,
   issuer: process.env.ISSUER,
   origin: process.env.ORIGIN,

@@ -16,7 +16,7 @@ app.use(bodyParser.json())
 // Enable cross-origin resource sharing.
 app.use(cors({
   origin: config.origin,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+  methods: ['GET', 'POST', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: false
 }))
@@ -26,13 +26,13 @@ if (config.env === 'development' || 'test') {
   app.use(express.static(`${ __dirname }/../build`))
 }
 
-// app.use('/', [
-//   require('./routes/auth_routes'),
-//   require('./routes/user_routes'),
-//   require('./routes/resource_routes'),
-//   require('./routes/permission_routes')
-// ])
+app.use('/', [
+  require('./routes/auth_routes'),
+  require('./routes/user_routes'),
+  require('./routes/resource_routes'),
+  require('./routes/permission_routes')
+])
 
-//app.use(require('./middleware/error_middleware').all)
+app.use(require('./middleware/error_middleware').all)
 
 module.exports = app

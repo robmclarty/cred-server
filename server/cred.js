@@ -1,8 +1,9 @@
 'use strict'
 
+const { readFileSync } = require('fs')
 const gotCred = require('cred')
 const config = require('../config/server')
-const { User } = require('./models')
+const User = require('./models/user')
 
 const cred = gotCred({
   resource: config.name,

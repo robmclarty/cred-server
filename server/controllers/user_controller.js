@@ -33,7 +33,7 @@ const getUsers = async (req, res, next) => {
 }
 
 // GET /users/:id
-const getUser = (req, res, next) => {
+const getUser = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id)
 
@@ -48,7 +48,7 @@ const getUser = (req, res, next) => {
 }
 
 // PATCH /users/:id
-const patchUser = (req, res, next) => {
+const patchUser = async (req, res, next) => {
   try {
     const user = await User.update(req.params.id, req.body.user)
 
@@ -63,7 +63,7 @@ const patchUser = (req, res, next) => {
 }
 
 // DELETE /users/:id
-const deleteUser = (req, res, next) => {
+const deleteUser = async (req, res, next) => {
   try {
     const user = await User.destroy(req.params.id)
 

@@ -71,6 +71,6 @@ module.exports = {
   tableName: TABLE_NAME,
   fields: SELECTABLE_FIELDS,
   ...queries,
-  create, // override default
-  update // override default
+  create, // override queries.create
+  update // override queries.update
 }
