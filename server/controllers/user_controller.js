@@ -3,6 +3,8 @@
 const User = require('../models/user')
 
 // POST /users
+// **ADMIN ONLY**
+// Create new users directly. This is different from "registration".
 const postUsers = async (req, res, next) => {
   try {
     const user = await User.create(req.body.user)
@@ -18,6 +20,7 @@ const postUsers = async (req, res, next) => {
 }
 
 // GET /users
+// **ADMIN ONLY**
 const getUsers = async (req, res, next) => {
   try {
     const users = await User.findAll()
@@ -33,6 +36,7 @@ const getUsers = async (req, res, next) => {
 }
 
 // GET /users/:id
+// **ADMIN or OWNER ONLY**
 const getUser = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id)
@@ -48,6 +52,7 @@ const getUser = async (req, res, next) => {
 }
 
 // PATCH /users/:id
+// **ADMIN or OWNER ONLY**
 const patchUser = async (req, res, next) => {
   try {
     const user = await User.update(req.params.id, req.body.user)
@@ -63,6 +68,7 @@ const patchUser = async (req, res, next) => {
 }
 
 // DELETE /users/:id
+// **ADMIN or OWNER ONLY**
 const deleteUser = async (req, res, next) => {
   try {
     const user = await User.destroy(req.params.id)

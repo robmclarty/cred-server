@@ -2,6 +2,7 @@
 
 const express = require('express')
 const router = express.Router()
+const { requireAdmin } = require('../middleware/authz_middleware')
 const {
   postResources,
   getResources,
@@ -11,12 +12,12 @@ const {
 } = require('../controllers/resource_controller')
 
 router.route('/resources')
-  .post(postResources)
+  .post(requireAdmin, postResources)
   .get(getResources)
 
 router.route('/resources/:id')
   .get(getResource)
-  .patch(patchResource)
-  .delete(deleteResource)
+  .patch(requireAdmin, patchResource)
+  .delete(requireAdmin, deleteResource)
 
 module.exports = router

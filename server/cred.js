@@ -25,6 +25,9 @@ cred.use('basic', req => {
   const username = String(req.body.username)
   const password = String(req.body.password)
 
+  if (!username && !email) throw '`username` is required'
+  if (!password) throw '`password` is required'
+
   return User.verify(username, password)
     .then(user => User.loginUpdate(user.id))
     .then(user => User.tokenPayload(user))

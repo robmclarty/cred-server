@@ -102,7 +102,7 @@ const tokenPayload = (user, permissions) => ({
   username: user.username,
   is_active: user.is_active,
   is_admin: user.is_admin,
-  permissions: tokenPermissions(permissions)
+  permissions: [] //tokenPermissions(permissions)
 })
 
 module.exports = {
