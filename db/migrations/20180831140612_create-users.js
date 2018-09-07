@@ -6,11 +6,11 @@ exports.up = function(knex, Promise) {
     t.string('username').unique().index()
     t.string('password')
     t.string('email').unique().index()
-    t.boolean('is_active').defaultTo(true)
-    t.boolean('is_admin').defaultTo(false)
-    t.timestamp('login_at').defaultTo(knex.fn.now())
-    t.timestamp('created_at').defaultTo(knex.fn.now())
-    t.timestamp('updated_at').defaultTo(knex.fn.now())
+    t.boolean('isActive').defaultTo(true)
+    t.boolean('isAdmin').defaultTo(false)
+    t.timestamp('loginAt').defaultTo(knex.fn.now())
+    t.timestamp('createdAt').defaultTo(knex.fn.now())
+    t.timestamp('updatedAt').defaultTo(knex.fn.now())
   })
 }
 

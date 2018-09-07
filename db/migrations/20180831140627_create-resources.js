@@ -6,9 +6,9 @@ exports.up = function(knex, Promise) {
     t.string('name').unique().index()
     t.string('url')
     t.json('actions').defaultTo(JSON.stringify([]))
-    t.boolean('is_active').defaultTo(true)
-    t.timestamp('created_at').defaultTo(knex.fn.now())
-    t.timestamp('updated_at').defaultTo(knex.fn.now())
+    t.boolean('isActive').defaultTo(true)
+    t.timestamp('createdAt').defaultTo(knex.fn.now())
+    t.timestamp('updatedAt').defaultTo(knex.fn.now())
   })
 }
 
