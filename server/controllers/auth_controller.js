@@ -20,8 +20,7 @@ const postAuth = (req, res, next) => {
   res.json({
     ok: true,
     message: 'Login successful',
-    tokens: req.cred.tokens,
-    payload: req.cred.payload
+    tokens: req.cred.tokens
   })
 }
 
@@ -64,7 +63,7 @@ const deleteAuth = async (req, res, next) => {
     res.json({
       ok: true,
       message: 'Logged out',
-      token: revokedToken
+      revokedToken
     })
   } catch (err) {
     next(createError({
