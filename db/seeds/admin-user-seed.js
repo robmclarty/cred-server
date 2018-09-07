@@ -1,13 +1,14 @@
 'use strict'
 
-const { User } = require('../../server/models')
+const User = require('../../server/models/user')
 
 exports.seed = (knex, Promise) => knex('users').del()
   .then(() => [
     {
       username: 'admin',
       password: 'password',
-      email: 'admin@email.com'
+      email: 'admin@email.com',
+      isAdmin: true
     },
     {
       username: 'first-user',
@@ -15,4 +16,4 @@ exports.seed = (knex, Promise) => knex('users').del()
       email: 'firstUser@email.com'
     }
   ])
-  .then(newUsers => Promise.all(newUsers.map(user => User.create())))
+  .then(newUsers => Promise.all(newUsers.map(user => User.create(user))))

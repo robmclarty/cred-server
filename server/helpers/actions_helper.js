@@ -21,23 +21,7 @@ const removeActions = (actions = [], removedActions = []) => {
   }, [...actions])
 }
 
-// `actions` is a JSON column in the database, so transform it to JSON string
-// before storing in DB.
-const jsonToArrays = props => ({
-  ...props,
-  actions: JSON.stringify(props.actions)
-})
-
-// `actions` is a JSON column in the database, so parse it to an array when
-// retrieving it from the DB.
-const arraysToJson = props => ({
-  ...props,
-  actions: JSON.parse(props.actions)
-})
-
 module.exports = {
   addActions,
-  removeActions,
-  jsonToArrays,
-  arraysToJson
+  removeActions
 }

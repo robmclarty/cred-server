@@ -7,16 +7,16 @@ const SELECTABLE_FIELDS = [
   'name',
   'url',
   'actions',
-  'is_active',
-  'updated_at',
-  'created_at'
+  'isActive',
+  'updatedAt',
+  'createdAt'
 ]
 
 const MUTABLE_FIELDS = [
   'name',
   'url',
   'actions',
-  'is_active'
+  'isActive'
 ]
 
 const knex = require('../knex')
@@ -47,6 +47,8 @@ const validate = props => {
   if (!validator.isURL(props.url)) throw '`url` must be a valid URL'
   if (!validator.isBoolean(props.is_active)) throw '`is_active` must be either true or false'
   if (!isArrayOfStrings(props.actions)) throw '`actions` must be an array of srtings'
+
+  return props
 }
 
 const create = async props => {

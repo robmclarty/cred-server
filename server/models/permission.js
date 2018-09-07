@@ -4,16 +4,16 @@ const TABLE_NAME = 'permissions'
 
 const SELECTABLE_FIELDS = [
   'id',
-  'user_id',
-  'resource_id',
+  'userId',
+  'resourceId',
   'actions',
-  'updated_at',
-  'created_at'
+  'updatedAt',
+  'createdAt'
 ]
 
 const CREATABLE_FIELDS = [
-  'user_id',
-  'resource_id',
+  'userId',
+  'resourceId',
   'actions'
 ]
 
@@ -27,10 +27,6 @@ const {
   isArray,
   isArrayOfStrings
 } = require('../helpers/validation_helper')
-const {
-  jsonToArrays,
-  arraysToJson,
-} = require('../helpers/actions_helper')
 
 // Remove all immutable fields
 const filter = (props, keys) => Object.keys(props).reduce((filteredProps, key) => {
@@ -53,6 +49,8 @@ const validate = props => {
   if (!validator.isNumeric(String(props.user_id))) throw '`user_id` must be an integer'
   if (!validator.isNumeric(String(props.resource_id))) throw '`resource_id` must be an integer'
   if (!isArrayOfStrings(props.actions)) throw '`actions` must be an array of srtings'
+
+  return props
 }
 
 const create = async props => {

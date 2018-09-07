@@ -9,12 +9,11 @@ const SELECTABLE_FIELDS = [
   'id',
   'username',
   'email',
-  'phone',
-  'is_active',
-  'is_admin',
-  'login_at',
-  'updated_at',
-  'created_at'
+  'isActive',
+  'isAdmin',
+  'loginAt',
+  'updatedAt',
+  'createdAt'
 ]
 
 // Properties that are allowed to be modified.
@@ -22,7 +21,7 @@ const MUTABLE_FIELDS = [
   'username',
   'email',
   'password',
-  'is_active'
+  'isActive'
 ]
 
 const knex = require('../knex')
@@ -53,9 +52,11 @@ const sanitize = async props => {
 
 const validate = props => {
   if (validator.isEmpty(props.username)) throw '`username` is required'
-  if (!validator.matches(props.username, /a-z0-9/i)) throw '`username` must be format a-z and 0-9'
+  if (!validator.matches(props.username, /^[A-Za-z0-9\-_@.]+$/)) throw '`username` must be url-safe'
   if (validator.isEmpty(props.email)) throw '`email` is required'
   if (!validator.isEmail(props.email)) throw '`email` must be a valid email address'
+
+  return props
 }
 
 const create = async props => {
@@ -98,10 +99,10 @@ const loginUpdate = async id => queries.update(id, {
 
 // TODO: not sure how this hooks up to permissions yet
 const tokenPayload = (user, permissions) => ({
-  user_id: user.id,
+  userId: user.id,
   username: user.username,
-  is_active: user.is_active,
-  is_admin: user.is_admin,
+  isActive: user.isActive,
+  isAdmin: user.isAdmin,
   permissions: [] //tokenPermissions(permissions)
 })
 
