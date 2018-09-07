@@ -5,7 +5,7 @@ const router = express.Router()
 const {
   requireAdmin,
   requireOwner
-} = require('../middielware/authz_middleware')
+} = require('../middleware/authz_middleware')
 const {
   postUsers,
   getUsers,

@@ -39,7 +39,7 @@ const requireAdmin = (req, res, next) => {
   next()
 }
 
-modules.exports = {
+module.exports = {
   requireAdmin,
   requireOwner
 }
