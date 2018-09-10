@@ -16,4 +16,4 @@ exports.seed = (knex, Promise) => knex('users').del()
       email: 'firstUser@email.com'
     }
   ])
-  .then(newUsers => Promise.all(newUsers.map(user => User.create(user))))
+  .then(newUsers => Promise.all(newUsers.map(user => User.forceCreate(user))))

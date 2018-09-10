@@ -44,6 +44,7 @@ const sanitize = props => {
 }
 
 const validate = props => {
+  console.log('props: ', props)
   if (!validator.isURL(props.url, {
     require_tld: false,
     allow_underscores: true

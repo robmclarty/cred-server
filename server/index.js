@@ -3,6 +3,7 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
+const cred = require('./cred')
 const config = require('../config/server')
 
 const app = express()
@@ -26,8 +27,14 @@ if (config.env === 'development' || 'test') {
   app.use(express.static(`${ __dirname }/../build`))
 }
 
+// Public routes
 app.use('/', [
-  require('./routes/auth_routes'),
+  require('./routes/auth_routes')
+])
+
+// Authorized routes
+app.use('/', [
+  cred.requireAccessToken,
   require('./routes/user_routes'),
   require('./routes/resource_routes'),
   require('./routes/permission_routes')

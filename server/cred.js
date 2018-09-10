@@ -1,13 +1,12 @@
 'use strict'
 
-const ADMIN_PERMISSION = 'admin'
-
 const { readFileSync } = require('fs')
 const gotCred = require('cred')
 const config = require('../config/server')
 const User = require('./models/user')
 const Permission = require('./models/permission')
 const Resource = require('./models/resource')
+const { ADMIN_PERMISSION } = require('./constants/model_constants')
 
 const cred = gotCred({
   resource: config.name,
@@ -32,7 +31,7 @@ const tokenPayload = async (resource, user) => {
   })
 
   // If user is not active, return an empty array of permission actions.
-  const actions = permission && user.isActive ?
+  const actions = permission ?
     permission.actions :
     []
 

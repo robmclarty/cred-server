@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "./bin/start-with-env.sh --file ./config/env/app.dev.env",
     "db:migrate": "npx knex migrate:latest",
-    "db:seed": "npx knex seed:run"
+    "db:seed": "APP_NAME=cred-server ISSUER=http://localhost:3000 npx knex seed:run"
   },
   "keywords": [
     "express",

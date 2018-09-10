@@ -60,6 +60,15 @@ const validate = props => {
   return props
 }
 
+// Create users without filtering (e.g., for use by admins).
+const forceCreate = async props => {
+  const saneProps = await sanitize(props)
+  const validProps = validate(saneProps)
+  const user = await queries.create(validProps)
+
+  return user
+}
+
 const create = async props => {
   const filteredProps = filter(props, MUTABLE_FIELDS)
   const saneProps = await sanitize(filteredProps)
@@ -90,7 +99,11 @@ const verify = async (username, password) => {
     .from(TABLE_NAME)
     .where({ username })
 
-  if (!user) throw verifyErrorMsg
+  // Respond with same error message regardless of reason to provide attackers
+  // with no additional information.
+  // User must exist, have a verified password, and be active to be consdiered
+  // authentic.
+  if (!user || !user.isActive) throw verifyErrorMsg
 
   const isMatch = await verifyPassword(password, user.password)
 
@@ -110,6 +123,7 @@ module.exports = {
   tableName: TABLE_NAME,
   fields: SELECTABLE_FIELDS,
   ...queries,
+  forceCreate,
   create, // override queries.create
   update, // override queries.update
   verify,
