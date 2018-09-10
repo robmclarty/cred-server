@@ -44,8 +44,11 @@ const sanitize = props => {
 }
 
 const validate = props => {
-  if (!validator.isURL(props.url)) throw '`url` must be a valid URL'
-  if (!validator.isBoolean(props.is_active)) throw '`is_active` must be either true or false'
+  if (!validator.isURL(props.url, {
+    require_tld: false,
+    allow_underscores: true
+  })) throw '`url` must be a valid URL'
+  if (!validator.isBoolean(String(props.isActive))) throw '`isActive` must be either true or false'
   if (!isArrayOfStrings(props.actions)) throw '`actions` must be an array of srtings'
 
   return props

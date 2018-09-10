@@ -27,6 +27,7 @@ const {
   isArray,
   isArrayOfStrings
 } = require('../helpers/validation_helper')
+const queries = require('../helpers/query_helper')(TABLE_NAME, SELECTABLE_FIELDS)
 
 // Remove all immutable fields
 const filter = (props, keys) => Object.keys(props).reduce((filteredProps, key) => {
@@ -44,10 +45,10 @@ const sanitize = props => {
 }
 
 const validate = props => {
-  if (validator.isEmpty(String(props.user_id))) throw '`user_id` is required'
-  if (validaotr.isEmpty(String(props.resource_id))) throw '`resource_id` is required'
-  if (!validator.isNumeric(String(props.user_id))) throw '`user_id` must be an integer'
-  if (!validator.isNumeric(String(props.resource_id))) throw '`resource_id` must be an integer'
+  if (validator.isEmpty(String(props.userId))) throw '`userId` is required'
+  if (validaotr.isEmpty(String(props.resourceId))) throw '`resourceId` is required'
+  if (!validator.isNumeric(String(props.userId))) throw '`userId` must be an integer'
+  if (!validator.isNumeric(String(props.resourceId))) throw '`resourceId` must be an integer'
   if (!isArrayOfStrings(props.actions)) throw '`actions` must be an array of srtings'
 
   return props

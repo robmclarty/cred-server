@@ -29,6 +29,7 @@ const bcrypt = require('bcrypt')
 const validator = require('validator')
 const { isArray } = require('../helpers/validation_helper')
 const queries = require('../helpers/query_helper')(TABLE_NAME, SELECTABLE_FIELDS)
+const Permission = require('./permission')
 
 // Bcrypt functions used for hashing password and later verifying it.
 const hashPassword = password => bcrypt.hash(password, SALT_ROUNDS)
@@ -82,7 +83,12 @@ const update = async (id, props) => {
 const verify = async (username, password) => {
   const verifyErrorMsg = 'Username or password do not match'
 
-  const user = await queries.findOne({ username })
+  const user = await knex.first([
+    ...SELECTABLE_FIELDS,
+    'password'
+  ])
+    .from(TABLE_NAME)
+    .where({ username })
 
   if (!user) throw verifyErrorMsg
 
@@ -90,20 +96,14 @@ const verify = async (username, password) => {
 
   if (!isMatch) throw verifyErrorMsg
 
+  // Don't include `password` in returned object.
+  delete user.password
+
   return user
 }
 
 const loginUpdate = async id => queries.update(id, {
-  login_at: knex.fn.now()
-})
-
-// TODO: not sure how this hooks up to permissions yet
-const tokenPayload = (user, permissions) => ({
-  userId: user.id,
-  username: user.username,
-  isActive: user.isActive,
-  isAdmin: user.isAdmin,
-  permissions: [] //tokenPermissions(permissions)
+  loginAt: knex.fn.now()
 })
 
 module.exports = {
@@ -113,6 +113,5 @@ module.exports = {
   create, // override queries.create
   update, // override queries.update
   verify,
-  loginUpdate,
-  tokenPayload
+  loginUpdate
 }

@@ -1,6 +1,6 @@
 {
   "name": "cred-server",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "An authZ + authN system for managing users and resources across disparate APIs via permissions embeded in JSON web tokens.",
   "main": "index.js",
   "scripts": {
@@ -17,13 +17,17 @@
     "authentication",
     "jwt"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/robmclarty/cred-server.git"
+  },
   "author": "Rob McLarty <r@robmclarty.com> (http://robmclarty.com)",
   "license": "MIT",
   "dependencies": {
     "bcrypt": "^3.0.0",
     "body-parser": "^1.18.3",
     "cors": "^2.8.4",
-    "cred": "^0.5.10",
+    "cred": "^0.5.11",
     "express": "^4.16.3",
     "knex": "^0.15.2",
     "pg": "^7.4.3",

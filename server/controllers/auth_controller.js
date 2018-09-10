@@ -3,7 +3,8 @@
 const {
   createError,
   UNAUTHORIZED,
-  FORBIDDEN
+  FORBIDDEN,
+  BAD_REQUEST
 } = require('../helpers/error_helper')
 const cred = require('../cred')
 
@@ -37,7 +38,6 @@ const refreshAuth = async (req, res, next) => {
     })
   } catch (err) {
     next(createError({
-      ok: false,
       status: UNAUTHORIZED,
       message: err
     }))
@@ -52,7 +52,6 @@ const refreshAuth = async (req, res, next) => {
 // their token payload set to `true`.
 const deleteAuth = async (req, res, next) => {
   if (req.body.token && !req.cred.payload.isAdmin) return next(createError({
-    ok: false,
     status: FORBIDDEN,
     message: 'You are not authorized to revoke this token'
   }))
@@ -74,8 +73,36 @@ const deleteAuth = async (req, res, next) => {
   }
 }
 
+// Create a new user.
+const postRegister = async (req, res, next) => {
+  if (!req.body.user) return next(createError({
+    status: BAD_REQUEST,
+    message: '`user` is required'
+  }))
+
+  try {
+    // Create a new user that is guaranteed not to be an admin.
+    const user = await User.create({
+      ...req.body.user,
+      isAdmin: false
+    })
+
+    res.json({
+      ok: true,
+      message: 'Registration successful',
+      user
+    })
+  } catch (err) {
+    next(createError({
+      status: BAD_REQUEST,
+      message: err
+    }))
+  }
+}
+
 module.exports = {
   postAuth,
   refreshAuth,
-  deleteAuth
+  deleteAuth,
+  postRegister
 }

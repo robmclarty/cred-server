@@ -6,7 +6,8 @@ const cred = require('../cred')
 const {
   postAuth,
   refreshAuth,
-  deleteAuth
+  deleteAuth,
+  postRegister
 } = require('../controllers/auth_controller')
 
 router.route('/auth')
@@ -15,5 +16,10 @@ router.route('/auth')
 
 router.route('/auth/refresh')
   .post(cred.requireRefreshToken, refreshAuth)
+
+// TODO: implement some additional protections for this endpoint such as
+// rate-limiting.
+router.route('/register')
+  .post(postRegister)
 
 module.exports = router

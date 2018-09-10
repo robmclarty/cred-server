@@ -1,11 +1,20 @@
 'use strict'
 
 const User = require('../models/user')
+const {
+  createError,
+  BAD_REQUEST
+} = require('../helpers/error_helper')
 
 // POST /users
 // **ADMIN ONLY**
 // Create new users directly. This is different from "registration".
 const postUsers = async (req, res, next) => {
+  if (!req.body.user) return next(createError({
+    status: BAD_REQUEST,
+    message: '`user` is required'
+  }))
+
   try {
     const user = await User.create(req.body.user)
 
