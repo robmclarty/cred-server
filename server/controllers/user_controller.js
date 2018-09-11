@@ -36,7 +36,7 @@ const getUsers = async (req, res, next) => {
 
     res.json({
       ok: true,
-      message: 'Found users',
+      message: 'Users found',
       users
     })
   } catch (err) {
@@ -52,7 +52,7 @@ const getUser = async (req, res, next) => {
 
     res.json({
       ok: true,
-      message: 'Found user',
+      message: 'User found',
       user
     })
   } catch (err) {
@@ -63,6 +63,11 @@ const getUser = async (req, res, next) => {
 // PATCH /users/:id
 // **ADMIN or OWNER ONLY**
 const patchUser = async (req, res, next) => {
+  if (!req.body.user) return next(createError({
+    status: BAD_REQUEST,
+    message: '`user` is required'
+  }))
+
   try {
     const user = await User.update(req.params.id, req.body.user)
 

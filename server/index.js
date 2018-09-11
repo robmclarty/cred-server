@@ -18,7 +18,7 @@ app.use(bodyParser.json())
 app.use(cors({
   origin: config.origin,
   methods: ['GET', 'POST', 'PATCH', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Accept', 'Authorization'],
   credentials: false
 }))
 
