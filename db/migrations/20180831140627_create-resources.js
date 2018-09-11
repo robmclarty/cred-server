@@ -4,7 +4,7 @@ exports.up = function(knex, Promise) {
   return knex.schema.createTable('resources', t => {
     t.increments('id').primary().unsigned()
     t.string('name').unique().index()
-    t.string('url')
+    t.string('url').unique().index()
     t.json('actions').defaultTo(JSON.stringify([]))
     t.boolean('isActive').defaultTo(true)
     t.timestamp('createdAt').defaultTo(knex.fn.now())

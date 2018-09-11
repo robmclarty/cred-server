@@ -44,7 +44,7 @@ const sanitize = props => {
 }
 
 const validate = props => {
-  console.log('props: ', props)
+  if (!validator.matches(props.name, /^[A-Za-z0-9\-_@.]+$/)) throw '`name` must be url-safe'
   if (!validator.isURL(props.url, {
     require_tld: false,
     allow_underscores: true
