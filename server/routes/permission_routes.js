@@ -5,7 +5,7 @@ const router = express.Router()
 const {
   requireAdmin,
   requireOwner,
-  canModifyPermission
+  requireModifyPermission
 } = require('../middleware/authz_middleware')
 const {
   postPermissions,
@@ -31,7 +31,7 @@ router.route('/users/:user_id/permissions')
 
 router.route('/users/:user_id/permissions/:permission_id')
   .get(requireOwner, getPermission)
-  .patch(canModifyPermission, patchPermission)
-  .delete(canModifyPermission, deletePermission)
+  .patch(requireModifyPermission, patchPermission)
+  .delete(requireModifyPermission, deletePermission)
 
 module.exports = router

@@ -70,5 +70,5 @@ const requireModifyPermission = async (req, res, next) => {
 module.exports = {
   requireAdmin,
   requireOwner,
-  canModifyPermission
+  requireModifyPermission
 }
