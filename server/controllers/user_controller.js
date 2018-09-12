@@ -6,7 +6,7 @@ const {
   BAD_REQUEST
 } = require('../helpers/error_helper')
 const {
-  changePermissions,
+  modifyPermissions,
   findUserPermissions
 } = require('../helpers/permission_helper')
 
@@ -39,21 +39,21 @@ const {
 // resource matches the names provided, an error will be thrown saying so.
 //
 // IMPORTANT: Only admins are allowed to modify a user's permissions.
-const postUsers = async (req, res, next) => {
-  if (!req.body.user) return next(createError({
+const adminPostUsers = async (req, res, next) => {
+  const userInput = req.body.user
+
+  if (!userInput) return next(createError({
     status: BAD_REQUEST,
     message: '`user` is required'
   }))
 
   try {
     const {
-      permissions: newActions,
+      permissions: permissionsInput,
       ...userInput
-    } = req.body.user
+    } = userInput
     const user = await User.create(userInput)
-    const changedPermissions = user.isAdmin ?
-      await changePermissions(user.id, newActions) :
-      {}
+    const changedPermissions = await modifyPermissions(user.id, permissionsInput)
     const userWithPermissions = {
       ...user,
       permissions: changedPermissions
@@ -71,7 +71,7 @@ const postUsers = async (req, res, next) => {
 
 // GET /users
 // **ADMIN ONLY**
-const getUsers = async (req, res, next) => {
+const adminGetUsers = async (req, res, next) => {
   try {
     const users = await User.findAll()
     const usersWithPermissions = users.map(user => ({
@@ -92,8 +92,10 @@ const getUsers = async (req, res, next) => {
 // GET /users/:id
 // **ADMIN or OWNER ONLY**
 const getUser = async (req, res, next) => {
+  const userId = req.params.user_id
+
   try {
-    const user = await User.findById(req.params.id)
+    const user = await User.findById(userId)
     const userWithPermissions = {
       ...user,
       permissions: await findUserPermissions(user.id)
@@ -109,30 +111,33 @@ const getUser = async (req, res, next) => {
   }
 }
 
-// PATCH /users/:id
-// **ADMIN or OWNER ONLY**
+// PATCH /users/:user_id/admin
+// **ADMIN ONLY**
 //
 // NOTE: Similar to the `create()` function, updating a user with an included
 // `permissions` object can be used to replace any permissible actions for this
 // user for the specified resources.
 //
 // IMPORTANT: Only admins are allowed to modify a user's permissions.
-const patchUser = async (req, res, next) => {
-  if (!req.body.user) return next(createError({
+const adminPatchUser = async (req, res, next) => {
+  const userId = req.params.user_id
+  const userInput = req.body.user
+
+  if (!userInput) return next(createError({
     status: BAD_REQUEST,
     message: '`user` is required'
   }))
 
   try {
     const {
-      permissions: newActions,
+      permissions: permissionsInput,
       ...userInput
-    } = req.body.user
-    const user = await User.update(req.params.id, userInput)
+    } = userInput
+    const user = await User.update(userId, userInput)
     const userPermissions = await findUserPermissions(user.id)
-    const changedPermissions = user.isAdmin ?
-      await changePermissions(user.id, newActions) :
-      {}
+    // TODO: change this authorization check so it is handled at the route
+    // level by middleware rather than inside the controller function.
+    const changedPermissions = await modifyPermissions(user.id, permissionsInput)
     const userWithPermissions = {
       ...user,
       permissions: {
@@ -151,11 +156,37 @@ const patchUser = async (req, res, next) => {
   }
 }
 
+// PATCH /users/:id
+// **ADMIN or OWNER ONLY**
+const patchUser = async (req, res, next) => {
+  const userId = req.params.user_id
+  const userInput = req.body.user
+
+  if (!userInput) return next(createError({
+    status: BAD_REQUEST,
+    message: '`user` is required'
+  }))
+
+  try {
+    const user = await User.update(userId, userInput)
+
+    res.json({
+      ok: true,
+      message: 'User updated',
+      user
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
 // DELETE /users/:id
 // **ADMIN or OWNER ONLY**
 const deleteUser = async (req, res, next) => {
+  const userId = req.params.user_id
+
   try {
-    const user = await User.destroy(req.params.id)
+    const user = await User.destroy(userId)
 
     res.json({
       ok: true,
@@ -168,9 +199,10 @@ const deleteUser = async (req, res, next) => {
 }
 
 module.exports = {
-  postUsers,
-  getUsers,
+  adminPostUsers,
+  adminGetUsers,
   getUser,
   patchUser,
-  deleteUser
+  deleteUser,
+  adminPatchUser
 }

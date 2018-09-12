@@ -7,20 +7,24 @@ const {
   requireOwner
 } = require('../middleware/authz_middleware')
 const {
-  postUsers,
-  getUsers,
+  adminPostUsers,
+  adminGetUsers,
   getUser,
   patchUser,
-  deleteUser
+  deleteUser,
+  adminPatchUser
 } = require('../controllers/user_controller')
 
 router.route('/users')
-  .post(requireAdmin, postUsers)
-  .get(requireAdmin, getUsers)
+  .post(requireAdmin, adminPostUsers)
+  .get(requireAdmin, adminGetUsers)
 
 router.route('/users/:user_id')
   .get(requireOwner, getUser)
   .patch(requireOwner, patchUser)
   .delete(requireOwner, deleteUser)
+
+router.route('/users/:user_id/admin')
+  .patch(requireAdmin, adminPatchUser)
 
 module.exports = router

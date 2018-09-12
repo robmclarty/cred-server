@@ -2,22 +2,35 @@
 
 const express = require('express')
 const router = express.Router()
-const { requireOwner } = require('../middleware/authz_middleware')
+const {
+  requireAdmin,
+
+} = require('../middleware/authz_middleware')
 const {
   postPermissions,
   getPermissions,
+  patchPermissions,
+  deletePermissions,
   getPermission,
   patchPermission,
-  deletePermission
+  deletePermission,
+  adminPostPermissions,
+  adminGetPermissions
 } = require('../controllers/permission_controller')
 
+router.route('/permissions')
+  .post(requireAdmin, adminPostPermissions)
+  .get(requireAdmin, adminGetPermissions)
+
 router.route('/users/:user_id/permissions')
-  .post(requireOwner, postPermissions)
-  .get(requireOwner, getPermissions)
+  .post(requireAdmin, postPermissions)
+  .get(requireAdmin, getPermissions)
+  .patch(requireAdmin, patchPermissions)
+  .delete(requireAdmin, deletePermissions)
 
 router.route('/users/:user_id/permissions/:id')
-  .get(requireOwner, getPermission)
-  .patch(requireOwner, patchPermission)
-  .delete(requireOwner, deletePermission)
+  .get(requireAdmin, getPermission)
+  .patch(requireAdmin, patchPermission)
+  .delete(requireAdmin, deletePermission)
 
 module.exports = router

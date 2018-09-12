@@ -4,7 +4,10 @@ const {
   createError,
   UNAUTHORIZED
 } = require('../helpers/error_helper')
-const { ADMIN_PERMISSION } = require('../constants/model_constants')
+const {
+  IS_ADMIN,
+  CAN_MODIFY_PERMISSIONS
+} = require('../constants/permission_constants')
 
 // Compares the value of the URI param `user_id` to the value of the `userId`
 // stored in the authentication token to determine if they match. If the do,
@@ -21,7 +24,13 @@ const isAdmin = req => req.cred &&
   req.cred.payload &&
   req.cred.payload.permissions &&
   Array.isArray(req.cred.payload.permissions) &&
-  req.cred.payload.permissions.includes(ADMIN_PERMISSION)
+  req.cred.payload.permissions.includes(IS_ADMIN)
+
+const canModifyPermissions = req => req.cred &&
+  req.cred.payload &&
+  req.cred.payload.permissions &&
+  Array.isArray(req.cred.payload.permissions) &&
+  req.cred.payload.permissions.includes(CAN_MODIFY_PERMISSIONS)
 
 // NOTE: If user is an "admin" user, they are also considered an "owner".
 const requireOwner = (req, res, next) => {
@@ -37,6 +46,15 @@ const requireAdmin = (req, res, next) => {
   if (!isAdmin(req)) return next(createError({
     status: UNAUTHORIZED,
     message: 'You are not authrorized to access this resource'
+  }))
+
+  next()
+}
+
+const requireModifyPermissions = (req, res, next) => {
+  if (!isAdmin(req) && !canModifyPermissions(req)) return next(createError({
+    status: UNAUTHORIZED,
+    message: 'You are not authorized to access this resource'
   }))
 
   next()

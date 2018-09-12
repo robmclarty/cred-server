@@ -6,7 +6,7 @@ const config = require('../config/server')
 const User = require('./models/user')
 const Permission = require('./models/permission')
 const Resource = require('./models/resource')
-const { ADMIN_PERMISSION } = require('./constants/model_constants')
+const { IS_ADMIN } = require('./constants/permission_constants')
 
 const cred = gotCred({
   resource: config.name,
@@ -36,7 +36,7 @@ const tokenPayload = async (resource, user) => {
     []
 
   // If user is an admin, add the admin permission actions.
-  if (user.isAdmin) actions.push(ADMIN_PERMISSION)
+  if (user.isAdmin) actions.push(IS_ADMIN)
 
   // Use `resource.url` as the token's audience attribute as it uniquely
   // identifies the resource for which permissions are being issued.
