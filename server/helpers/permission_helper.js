@@ -97,13 +97,13 @@ const createOrUpdatePermission = async (userId, resourceName, actions = []) => {
 //   anotherResource: ['action1', 'action2']
 // }
 // ```
-const modifyPermissions = async (userId, newPermissions = {}) => {
+const modifyPermissions = async (userId, newPerms = {}) => {
   // If no actions are provided, or not formatted properly, return empty array.
-  if (!newPermissions || newPermissions === Object(newPermissions))) return []
+  if (!newPerms || newPerms !== Object(newPerms)) return []
 
-  const resourceNames = Object.keys(newPermissions)
+  const resourceNames = Object.keys(newPerms)
 
-  return resourceNames.reduce((userPermissions, name) => {
+  return resourceNames.reduce(async (userPermissions, name) => {
     const updatedPermission = await createOrUpdatePermission(userId, name, userPermissions[name])
 
     // If there is no resource found with the provided name, simply return an
@@ -114,7 +114,7 @@ const modifyPermissions = async (userId, newPermissions = {}) => {
       ...userPermissions,
       [name]: {
         name,
-        actions: newPermissions[name],
+        actions: newPerms[name],
         error: `There is no resource named '${ name }'`
       }
     }
@@ -149,7 +149,7 @@ module.exports = {
   createOrUpdatePermission,
   modifyPermissions,
   findUserPermissions,
-  addActions,
+  mergeActions,
   removeActions,
   addPermissions,
   reducePermissions

@@ -185,7 +185,7 @@ const deletePermission = async (req, res, next) => {
 }
 
 // POST /permissions
-const postAdminPermissions = async (req, res, next) => {
+const adminPostPermissions = async (req, res, next) => {
   const permInput = req.body.permission
 
   try {
@@ -202,7 +202,7 @@ const postAdminPermissions = async (req, res, next) => {
 }
 
 // GET /permissions
-const getAdminPermissions = async (req, res, next) => {
+const adminGetPermissions = async (req, res, next) => {
   try {
     const permissions = Permission.findAll()
 

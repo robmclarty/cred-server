@@ -74,10 +74,11 @@ const adminPostUsers = async (req, res, next) => {
 const adminGetUsers = async (req, res, next) => {
   try {
     const users = await User.findAll()
+    const permissions = await findUserPermissions(user.id)
     const usersWithPermissions = users.map(user => ({
       ...user,
-      permissions: await findUserPermissions(user.id)
-    })
+      permissions
+    }))
 
     res.json({
       ok: true,
