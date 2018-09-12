@@ -5,17 +5,23 @@ const {
   createError,
   BAD_REQUEST
 } = require('../helpers/error_helper')
+const { mergeActions } = require('../helpers/permission_helper')
 
 // POST /resources
 // **ADMIN ONLY**
 const postResources = async (req, res, next) => {
-  if (!req.body.resource) return next(createError({
+  const resourceInput = req.body.resource
+
+  if (!resourceInput) return next(createError({
     status: BAD_REQUEST,
     message: '`resource` is required'
   }))
 
   try {
-    const resource = await Resource.create(req.body.resource)
+    // Ensure that default resource actions are included with input.
+    resourceInput.actions = mergeActions(resourceInput.actions, DEFAULT_RESOURCE_ACTIONS)
+
+    const resource = await Resource.create(resourceInput)
 
     res.json({
       ok: true,

@@ -124,7 +124,7 @@ const deletePermissions = async (req, res, next) => {
 // GET /users/:user_id/permissions/:id
 // Will get an individual permission object for this user/resource.
 const getPermission = async (req, res, next) => {
-  const permissionId = req.params.id
+  const permissionId = req.params.permission_id
 
   try {
     const permission = await Permission.findById(permissionId)
@@ -145,7 +145,7 @@ const getPermission = async (req, res, next) => {
 //   actions: ['action1', 'action2', 'action3']
 // }
 const patchPermission = async (req, res, next) => {
-  const permissionId = req.params.id
+  const permissionId = req.params.permission_id
   const permInput = req.body.permission
 
   if (!permInput) return next(createError({
@@ -169,7 +169,7 @@ const patchPermission = async (req, res, next) => {
 // DELETE /users/:user_id/permissions/:id
 // Will completely remove this permission from the user.
 const deletePermission = async (req, res, next) => {
-  const permissionId = req.params.id
+  const permissionId = req.params.permission_id
 
   try {
     const permission = await Permission.destroy(permissionId)
