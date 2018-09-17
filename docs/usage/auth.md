@@ -68,7 +68,6 @@ curl \
   -X DELETE \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer aaaaa.bbbbb.ccccc" \
-  -d '{"username":"admin", "password":"password"}' \
   http://localhost:3000/auth
 ```
 
