@@ -89,6 +89,15 @@ const update = async (id, props) => {
   return user
 }
 
+// Don't filter props (e.g., for use by admins).
+const forceUpdate = async (id, props) => {
+  const saneProps = await sanitize(props)
+  const validProps = await validate(saneProps)
+  const user = await queries.udpate(id, validProps)
+
+  return user
+}
+
 const verify = async (username, password) => {
   const verifyErrorMsg = 'Username or password do not match'
 

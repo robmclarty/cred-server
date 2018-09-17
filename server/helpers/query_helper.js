@@ -61,6 +61,10 @@ module.exports = (tableName, selectableFields = '*') => {
     .from(tableName)
     .where({ id })
 
+  const destroyAll = async filters => knex.del()
+    .from(tableName)
+    .where(filters)
+
   return {
     find,
     findAll,

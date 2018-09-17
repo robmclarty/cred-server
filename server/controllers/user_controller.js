@@ -9,6 +9,7 @@ const {
   modifyPermissions,
   findUserPermissions
 } = require('../helpers/permission_helper')
+const { isAdmin } = require('../helpers/authz_helper')
 
 // POST /users
 // **ADMIN ONLY**
@@ -40,19 +41,34 @@ const {
 //
 // IMPORTANT: Only admins are allowed to modify a user's permissions.
 const adminPostUsers = async (req, res, next) => {
-  const userInput = req.body.user
+  const userInput = req.body
 
   if (!userInput) return next(createError({
     status: BAD_REQUEST,
-    message: '`user` is required'
+    message: 'No input data provided'
+  }))
+
+  if (!userInput.username) return next(createError({
+    status: BAD_REQUEST,
+    message: '`username` is required'
+  }))
+
+  if (!userInput.password) return next(createError({
+    status: BAD_REQUEST,
+    message: '`password` is required'
+  }))
+
+  if (!userInput.email) return next(createError({
+    status: BAD_REQUEST,
+    message: '`email` is required'
   }))
 
   try {
     const {
       permissions: permissionsInput,
-      ...userInput
+      ...userProps
     } = userInput
-    const user = await User.create(userInput)
+    const user = await User.create(userProps)
     const changedPermissions = await modifyPermissions(user.id, permissionsInput)
     const userWithPermissions = {
       ...user,
@@ -74,10 +90,13 @@ const adminPostUsers = async (req, res, next) => {
 const adminGetUsers = async (req, res, next) => {
   try {
     const users = await User.findAll()
-    const permissions = await findUserPermissions(user.id)
-    const usersWithPermissions = users.map(user => ({
-      ...user,
-      permissions
+    const usersWithPermissions = await Promise.all(users.map(async user => {
+      const permissions = await findUserPermissions(user.id)
+
+      return {
+        ...user,
+        permissions
+      }
     }))
 
     res.json({
@@ -97,9 +116,10 @@ const getUser = async (req, res, next) => {
 
   try {
     const user = await User.findById(userId)
+    const permissions = await findUserPermissions(user.id)
     const userWithPermissions = {
       ...user,
-      permissions: await findUserPermissions(user.id)
+      permissions
     }
 
     res.json({
@@ -112,15 +132,14 @@ const getUser = async (req, res, next) => {
   }
 }
 
-// PATCH /users/:user_id/admin
-// **ADMIN ONLY**
-//
+// PATCH /users/:id
+// **ADMIN or OWNER ONLY**
+// Admin can modify permissions, and modify user props like `isAdmin`. Regular
+// requestors cannot (e.g., see `user` and `changedPermissions` ternaries).
 // NOTE: Similar to the `create()` function, updating a user with an included
 // `permissions` object can be used to replace any permissible actions for this
 // user for the specified resources.
-//
-// IMPORTANT: Only admins are allowed to modify a user's permissions.
-const adminPatchUser = async (req, res, next) => {
+const patchUser = async (req, res, next) => {
   const userId = req.params.user_id
   const userInput = req.body.user
 
@@ -131,14 +150,17 @@ const adminPatchUser = async (req, res, next) => {
 
   try {
     const {
-      permissions: permissionsInput,
-      ...userInput
+      permissions: permInput,
+      ...userProps
     } = userInput
-    const user = await User.update(userId, userInput)
+    const requesterIsAdmin = isAdmin(req)
+    const user = requesterIsAdmin ?
+      await User.forceUpdate(userId, userProps) :
+      await User.update(userId, userProps)
     const userPermissions = await findUserPermissions(user.id)
-    // TODO: change this authorization check so it is handled at the route
-    // level by middleware rather than inside the controller function.
-    const changedPermissions = await modifyPermissions(user.id, permissionsInput)
+    const changedPermissions = requesterIsAdmin ?
+      await modifyPermissions(user.id, permissionsInput) :
+      {}
     const userWithPermissions = {
       ...user,
       permissions: {
@@ -157,42 +179,20 @@ const adminPatchUser = async (req, res, next) => {
   }
 }
 
-// PATCH /users/:id
-// **ADMIN or OWNER ONLY**
-const patchUser = async (req, res, next) => {
-  const userId = req.params.user_id
-  const userInput = req.body.user
-
-  if (!userInput) return next(createError({
-    status: BAD_REQUEST,
-    message: '`user` is required'
-  }))
-
-  try {
-    const user = await User.update(userId, userInput)
-
-    res.json({
-      ok: true,
-      message: 'User updated',
-      user
-    })
-  } catch (err) {
-    next(err)
-  }
-}
-
 // DELETE /users/:id
 // **ADMIN or OWNER ONLY**
 const deleteUser = async (req, res, next) => {
   const userId = req.params.user_id
 
   try {
-    const user = await User.destroy(userId)
+    const numUsersRemoved = await User.destroy(userId)
+    const numPermsRemoved = await Permission.destroyUserPerms(userId)
 
     res.json({
       ok: true,
       message: 'User removed',
-      user
+      numUsersRemoved,
+      numPermsRemoved
     })
   } catch (err) {
     next(err)

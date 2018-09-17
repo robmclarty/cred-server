@@ -72,6 +72,12 @@ const update = async (id, props) => {
   return permission
 }
 
+const destroyUserPerms = async userId => {
+  const numRemoved = queries.destroyAll({ userId })
+
+  return numRemoved
+}
+
 module.exports = {
   tableName: TABLE_NAME,
   fields: SELECTABLE_FIELDS,
