@@ -1,6 +1,6 @@
 {
   "name": "cred-server",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "Nodejs Express IdM system for managing user permissions across multiple resources using `cred` JSON web token protocol.",
   "main": "index.js",
   "scripts": {
