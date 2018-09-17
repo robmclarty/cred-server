@@ -1,0 +1,5 @@
+--ui bdd
+--reporter spec
+--require ./tests/server/index.js
+--recursive ./tests
+--timeout 5000

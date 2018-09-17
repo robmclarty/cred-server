@@ -1,11 +1,11 @@
 {
   "name": "cred-server",
   "version": "0.2.3",
-  "description": "An authZ + authN system for managing users and resources across disparate APIs via permissions embeded in JSON web tokens.",
+  "description": "Nodejs Express IdM system for managing user permissions across multiple resources using `cred` JSON web token protocol.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "./bin/start-with-env.sh --file ./config/env/app.dev.env",
+    "test": "./bin/envify.sh -e ./config/env/app.test.env -c \"npx mocha --opts ./tests/mocha.opts\"",
+    "start": "./bin/envify.sh -e ./config/env/app.dev.env -c ./server/start.js",
     "db:migrate": "npx knex migrate:latest",
     "db:seed": "APP_NAME=cred-server ISSUER=http://localhost:3000 npx knex seed:run"
   },
@@ -34,6 +34,10 @@
     "validator": "^10.7.1"
   },
   "devDependencies": {
+    "chai": "^4.1.2",
+    "chai-http": "^4.2.0",
+    "faker": "^4.1.0",
+    "mocha": "^5.2.0",
     "soko": "^0.2.6"
   }
 }
