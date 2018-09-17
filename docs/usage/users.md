@@ -1,6 +1,9 @@
 # Users
 
-## POST `/register`
+
+## Register New Account
+
+**POST** `/register`
 
 Create a new user/account. Cannot have admin permissions.
 
@@ -34,7 +37,10 @@ curl \
 }
 ```
 
-## POST `/users`
+
+## Create New User (admin only)
+
+**POST** `/users`
 
 NOTE: Can also optionally include a `permissions` attribute to mass-assign
 permissions at the same time as creation.
@@ -70,7 +76,10 @@ curl \
 }
 ```
 
-## GET `/users`
+
+## List All Users (admin only)
+
+**GET** `/users`
 
 ### Request
 
@@ -119,7 +128,10 @@ curl \
 }
 ```
 
-## GET `/users/:id`
+
+## Get User Details (admin/owner only)
+
+**GET** `/users/:id`
 
 ### Request
 
@@ -148,7 +160,10 @@ curl \
 }
 ```
 
-## PATCH `/users/:id`
+
+## Modify User Details (admin/owner only)
+
+**PATCH** `/users/:id`
 
 Modify a user's details by sending a `user` object in the request body. Users
 cannot modify their own permissions (nor modify their `isAdmin` property). Only
@@ -231,7 +246,9 @@ curl \
 ```
 
 
-## DELETE `/users/:id`
+## Remove User (admin/owner only)
+
+**DELETE** `/users/:id`
 
 Users can delete their own accounts, but admins have the ability to delete any
 user's account.
