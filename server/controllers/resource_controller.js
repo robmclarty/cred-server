@@ -88,12 +88,12 @@ const patchResource = async (req, res, next) => {
 // **ADMIN ONLY**
 const deleteResource = async (req, res, next) => {
   try {
-    const resource = await Resource.destroy(req.params.id)
+    const numResourcesRemoved = await Resource.destroy(req.params.id)
 
     res.json({
       ok: true,
       message: 'Resource removed',
-      resource
+      numResourcesRemoved
     })
   } catch (err) {
     next(err)
