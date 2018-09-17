@@ -1,8 +1,7 @@
 node_modules
 build/**/*
 !build/.keep
-config/keys/access_private.pem
-config/keys/access_public.pem
+config/keys/*.pem
 config/env/*.env
 .sass_cache
 .DS_Store
