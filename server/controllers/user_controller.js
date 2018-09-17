@@ -40,7 +40,7 @@ const { isAdmin } = require('../helpers/authz_helper')
 // resource matches the names provided, an error will be thrown saying so.
 //
 // IMPORTANT: Only admins are allowed to modify a user's permissions.
-const adminPostUsers = async (req, res, next) => {
+const postUsers = async (req, res, next) => {
   const userInput = req.body
 
   if (!userInput) return next(createError({
@@ -87,7 +87,7 @@ const adminPostUsers = async (req, res, next) => {
 
 // GET /users
 // **ADMIN ONLY**
-const adminGetUsers = async (req, res, next) => {
+const getUsers = async (req, res, next) => {
   try {
     const users = await User.findAll()
     const usersWithPermissions = await Promise.all(users.map(async user => {
@@ -200,10 +200,9 @@ const deleteUser = async (req, res, next) => {
 }
 
 module.exports = {
-  adminPostUsers,
-  adminGetUsers,
+  postUsers,
+  getUsers,
   getUser,
   patchUser,
-  deleteUser,
-  adminPatchUser
+  deleteUser
 }
