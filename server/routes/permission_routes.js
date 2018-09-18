@@ -24,10 +24,10 @@ router.route('/permissions')
   .get(requireAdmin, adminGetPermissions)
 
 router.route('/users/:user_id/permissions')
-  .post(requireAdmin, postPermissions)
+  .post(requireModifyPermission, postPermissions)
   .get(requireOwner, getPermissions)
-  .patch(requireAdmin, patchPermissions)
-  .delete(requireAdmin, deletePermissions)
+  .patch(requireModifyPermission, patchPermissions)
+  .delete(requireModifyPermission, deletePermissions)
 
 router.route('/users/:user_id/permissions/:permission_id')
   .get(requireOwner, getPermission)

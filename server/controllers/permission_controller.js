@@ -12,6 +12,38 @@ const {
   findUserPermissions
 } = require('../helpers/permission_helper')
 
+// POST /permissions
+const adminPostPermissions = async (req, res, next) => {
+  const permInput = req.body.permission
+
+  try {
+    const permission = Permission.create(permInput)
+
+    res.json({
+      ok: true,
+      message: 'Permission created',
+      permission
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
+// GET /permissions
+const adminGetPermissions = async (req, res, next) => {
+  try {
+    const permissions = Permission.findAll()
+
+    res.json({
+      ok: true,
+      message: 'Permissions found',
+      permissions
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
 // POST /users/:user_id/permissions
 // Create/update multiple permissions at once by providing an object where each
 // attribute is an array of permissible actions for a resource. Actions for
@@ -20,7 +52,7 @@ const {
 // `permissions` are included in the input data, however in this case, only
 // for permissions.
 // ```
-// {
+// permissions: {
 //   myResource: ['action1', 'action2', 'action3'],
 //   anotherResource: ['action1', 'action3']
 // }
@@ -35,12 +67,16 @@ const postPermissions = async (req, res, next) => {
   }))
 
   try {
-    const permissions = await modifyPermissions(userId, permInput)
+    const oldPerms = await findUserPermissions(userId)
+    const updatedPerms = await modifyPermissions(userId, permInput)
 
     res.json({
       ok: true,
       message: 'Permissions modified',
-      permissions
+      permissions: {
+        ...oldPerms,
+        ...updatedPerms
+      }
     })
   } catch (err) {
     next(err)
@@ -81,12 +117,15 @@ const patchPermissions = async (req, res, next) => {
   try {
     const oldPerms = await findUserPermissions(userId)
     const permUpdates = addPermissions(oldPerms, permInput)
-    const permissions = await modifyPermissions(userId, permUpdates)
+    const updatedPerms = await modifyPermissions(userId, permUpdates)
 
     res.json({
       ok: true,
       message: 'Permissions updated',
-      permissions
+      permissions: {
+        ...oldPerms,
+        ...updatedPerms
+      }
     })
   } catch (err) {
     next(err)
@@ -113,7 +152,7 @@ const deletePermissions = async (req, res, next) => {
 
     res.json({
       ok: true,
-      message: 'Permissions updates',
+      message: 'Permissions removed',
       permissions
     })
   } catch (err) {
@@ -121,7 +160,7 @@ const deletePermissions = async (req, res, next) => {
   }
 }
 
-// GET /users/:user_id/permissions/:id
+// GET /users/:user_id/permissions/:permission_id
 // Will get an individual permission object for this user/resource.
 const getPermission = async (req, res, next) => {
   const permissionId = req.params.permission_id
@@ -139,7 +178,7 @@ const getPermission = async (req, res, next) => {
   }
 }
 
-// PATCH /users/:user_id/permissions/:id
+// PATCH /users/:user_id/permissions/:permission_id
 // Will replace values already present with new values.
 // {
 //   actions: ['action1', 'action2', 'action3']
@@ -166,50 +205,18 @@ const patchPermission = async (req, res, next) => {
   }
 }
 
-// DELETE /users/:user_id/permissions/:id
+// DELETE /users/:user_id/permissions/:permission_id
 // Will completely remove this permission from the user.
 const deletePermission = async (req, res, next) => {
   const permissionId = req.params.permission_id
 
   try {
-    const permission = await Permission.destroy(permissionId)
+    const numPermsRemoved = await Permission.destroy(permissionId)
 
     res.json({
       ok: true,
       message: 'Permission removed',
-      permission
-    })
-  } catch (err) {
-    next(err)
-  }
-}
-
-// POST /permissions
-const adminPostPermissions = async (req, res, next) => {
-  const permInput = req.body.permission
-
-  try {
-    const permission = Permission.create(permInput)
-
-    res.json({
-      ok: true,
-      message: 'Permission created',
-      permission
-    })
-  } catch (err) {
-    next(err)
-  }
-}
-
-// GET /permissions
-const adminGetPermissions = async (req, res, next) => {
-  try {
-    const permissions = Permission.findAll()
-
-    res.json({
-      ok: true,
-      message: 'Permissions found',
-      permissions
+      numPermsRemoved
     })
   } catch (err) {
     next(err)

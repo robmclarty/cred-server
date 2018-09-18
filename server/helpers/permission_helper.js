@@ -103,15 +103,15 @@ const modifyPermissions = async (userId, newPerms = {}) => {
 
   const resourceNames = Object.keys(newPerms)
 
-  return resourceNames.reduce(async (userPermissions, name) => {
-    const updatedPermission = await createOrUpdatePermission(userId, name, userPermissions[name])
+  return resourceNames.reduce(async (userPerms, name) => {
+    const updatedPerm = await createOrUpdatePermission(userId, name, userPerms[name])
 
     // If there is no resource found with the provided name, simply return an
     // object containing information on the error, but continue execution,
     // updating any other, valid, permissions. Invalid names will simply be
     // skipped and it will be up to the requestor to handle this type of error.
-    if (!updatedPermission) return {
-      ...userPermissions,
+    if (!updatedPerm) return {
+      ...userPerms,
       [name]: {
         name,
         actions: newPerms[name],
@@ -120,8 +120,8 @@ const modifyPermissions = async (userId, newPerms = {}) => {
     }
 
     return {
-      ...userPermissions,
-      [name]: updatedPermission.actions
+      ...userPerms,
+      [name]: updatedPerm.actions
     }
   }, {})
 }
