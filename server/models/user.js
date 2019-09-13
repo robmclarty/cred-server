@@ -27,9 +27,7 @@ const MUTABLE_FIELDS = [
 const knex = require('../knex')
 const bcrypt = require('bcrypt')
 const validator = require('validator')
-const { isArray } = require('../helpers/validation_helper')
 const queries = require('../helpers/query_helper')(TABLE_NAME, SELECTABLE_FIELDS)
-const Permission = require('./permission')
 
 // Bcrypt functions used for hashing password and later verifying it.
 const hashPassword = password => bcrypt.hash(password, SALT_ROUNDS)

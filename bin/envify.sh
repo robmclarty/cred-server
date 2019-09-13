@@ -32,7 +32,7 @@ while :; do
       ;;
     -c|--command) # Takes an option argument; ensure it has been specified.
       if [ "$2" ]; then
-        file=$2
+        command=$2
         shift
       else
         die 'ERROR: "--command" requires a non-empty option argument.'

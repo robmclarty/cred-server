@@ -51,11 +51,6 @@ const refreshAuth = async (req, res, next) => {
 // action is only allowed by admin users (having the `isAdmin` property of
 // their token payload set to `true`.
 const deleteAuth = async (req, res, next) => {
-  if (req.body.token && !req.cred.payload.isAdmin) return next(createError({
-    status: FORBIDDEN,
-    message: 'You are not authorized to revoke this token'
-  }))
-
   try {
     const revokedToken = await cred.revoke(req.cred.token)
 
