@@ -24,7 +24,7 @@
   "author": "Rob McLarty <r@robmclarty.com> (http://robmclarty.com)",
   "license": "MIT",
   "dependencies": {
-    "bcrypt": "^3.0.0",
+    "bcrypt": "^5.0.0",
     "body-parser": "^1.18.3",
     "cors": "^2.8.4",
     "cred": "^0.6.0",
